@@ -1,0 +1,17 @@
+- name: Install ufw
+  action: yum name=ufw state=installed
+
+- name: ufw - enable IN on ssh from any host/port
+  action: ufw rule=limit port=ssh proto=tcp log=yes
+
+- name: ufw - disable IN on all other ports from any host/port
+  action: ufw direction=in rule=deny log=yes
+
+- name: ufw - enable OUT on all other ports to any host/port
+  action: ufw direction=out rule=allow
+
+- name: ufw - enable at startup
+  action: ufw state=enabled
+
+- name: ufw - reload
+  action: ufw state=reloaded

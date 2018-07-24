@@ -1,0 +1,5 @@
+- name: Install fail2ban
+  action: yum name=fail2ban state=installed
+
+- name: Enable fail2ban during startup
+  action: systemd name=fail2ban enabled=yes

@@ -1,0 +1,19 @@
+galaxy_info:
+  author: Wahid Sadik
+  description: An Ansible role to harden CentOs 7.x LTS after boot up
+  company: N/A
+
+  license: MIT
+
+  min_ansible_version: 1.2
+
+  github_branch: master
+
+  platforms:
+  - name: Ubuntu
+    versions:
+      - trusty
+
+  galaxy_tags: ['security']
+
+dependencies: []
