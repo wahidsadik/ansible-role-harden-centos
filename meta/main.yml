@@ -10,9 +10,9 @@ galaxy_info:
   github_branch: master
 
   platforms:
-  - name: Ubuntu
+  - name: CentOS
     versions:
-      - trusty
+      - 7.5
 
   galaxy_tags: ['security']
 
