@@ -133,7 +133,10 @@ You can run it the same way it's shown in last example.
 #### Example 3: Ready to use playbook
 
 * CentOS 7.x: [centos-7x-hardening.yml] (https://gist.github.com/wahidsadik/c73e54441ebb2b39a6e8d2a2ddbd7c3e)
-TBD
+
+#### Example 4: Live testing
+
+For development purposes, use the added `test-*.yml` files.
 
 License
 -------
