@@ -11,7 +11,6 @@
     # enable_ufw: False # error?
     public_keys: [
         '~/.ssh/id_rsa.pub',
-        '../testing-my-ansible-roles/public_keys/faisal_office_id.rsa.pub',
       ]
     # password is `test`
     # deployment_password: $6$AC3bdCF7$MA5sPtsGsOei6fCtyyzHeOqBpEzsi.yl9wS1yaP1.nKhuNR6ZBmcouWh6XJkrFdzreENtvUF4Gr2R0gfIQ/PT.
