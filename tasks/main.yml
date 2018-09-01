@@ -1,37 +1,41 @@
 ---
+- debug: msg="add_deployment_user = {{add_deployment_user}}"
 - debug: msg="deployment_user = {{deployment_user}}"
 - debug: msg="deployment_group = {{deployment_group}}"
+- debug: msg="enable_stop_root_login = {{enable_stop_root_login}}"
 - debug: msg="minimum_public_keys_provided = {{minimum_public_keys_provided}}"
 
 - name: Update YUM package cache
   action: yum name='*' update_cache=yes
+  when: enable_auto_update
 
 - name: Run upgrade on all existing packages
   action: yum name='*' state=latest
+  when: enable_auto_update
 
 - name: Add EPEL repository
   action: yum name=epel-release state=installed
+  when: enable_auto_update
+
+- name: Enable auto-udpate of packages
+  include_tasks: auto-update.yml
+  when: enable_auto_update
 
 - name: Install and configure fail2ban
   include_tasks: fail2ban.yml
+  when: enable_fail2ban
 
 - name: Install and configure ufw
   include_tasks: ufw.yml
+  when: enable_ufw
 
 - name: Create {{deployment_group}} group
   action: group name={{deployment_group}} state=present
+  when: add_deployment_user
 
 - name: Add {{deployment_user}} user and add to sudoers
   action: user name={{deployment_user}} password={{ deployment_password }} shell=/bin/bash groups={{deployment_group}},wheel
-
-- name: Install unattended-upgrades with default interval
-  action: yum name=yum-cron state=installed
-
-- name: Start yum-cron
-  action: systemd name=yum-cron state=started
-
-- name: Enable yum-cron during startup
-  action: systemd name=yum-cron enabled=yes
+  when: add_deployment_user
 
 - name: Validate number of public keys
   fail: msg="public_keys must have 1 or more items"
@@ -40,14 +44,14 @@
 - name: Add authorized key(s) for the user {{deployment_user}}
   action: authorized_key user={{deployment_user}} key="{{ item }}" state=present
   with_file: '{{public_keys}}'
-  when: minimum_public_keys_provided
-
-- name: Disallow root SSH access
-  action: lineinfile dest=/etc/ssh/sshd_config regexp="^PermitRootLogin" line="PermitRootLogin no" state=present
-  when: minimum_public_keys_provided
-  notify: Restart sshd
+  when: add_deployment_user and minimum_public_keys_provided
 
 - name: Disallow password authentication
   action: lineinfile dest=/etc/ssh/sshd_config regexp="^PasswordAuthentication" line="PasswordAuthentication no" state=present
-  when: minimum_public_keys_provided
+  when: enable_stop_password_authentication
+  notify: Restart sshd
+
+- name: Disallow root SSH access
+  action: lineinfile dest=/etc/ssh/sshd_config regexp="^PermitRootLogin" line="PermitRootLogin no" state=present
+  when: enable_stop_root_login
   notify: Restart sshd

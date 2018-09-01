@@ -28,10 +28,22 @@ Role Variables
 
 The role defines the following variables in `defaults/main.yml`:
 
+    enable_auto_update: True
+    enable_fail2ban: True
+    enable_ufw: True
+
+    add_deployment_user: True
     deployment_user: deployer
     deployment_group: deployer
 
+    enable_stop_password_authentication: True
+    enable_stop_root_login: True
+
+Set the values of the first 4 variables to `False` disable those behavior. It is highly recommended that all flags should be used.
+
 Users must pass the following parameters (i.e. variables):
+
+TODO: Mention that `enable_stop_password_authentication: True` will impact remote login for `root` user; local SSH should be fine.
 
 - `deployment_password`. Has to be encrypted password. See the below section on how to generate one.
 
@@ -73,6 +85,52 @@ It is assumed that this role will be run right after creating a new machine. Hen
 
 Example Playbook
 ----------------
+
+#### Example 1: Base example
+
+    - hosts: all
+
+      vars:
+        # example uses on how to disable a variable
+        - enable_ufw: False
+      vars_prompt:
+        - name: "deployment_password"
+          prompt: "What password to use for new user?"
+          private: yes
+          encrypt: "sha512_crypt"
+          confirm: yes
+          salt_size: 7
+
+      roles:
+        - {
+            role: wahidsadik.ansible-role-harden-ubuntu,
+            public_keys: [
+              '~/.ssh/id_rsa.pub'
+            ]
+
+          }
+
+Assuming you saved this playbook as `test-hardening-role.yml`, run it like this:
+
+- `$ ansible-playbook -i <my-ip>, test-hardening-role.yml --user=<connection-user> --ask-pass`. For password-based login. Enter user's password at prompt and then new user's password.
+- `$ ansible-playbook -i <my-ip>, test-hardening-role.yml --user=<connection-user> --become --ask-become-pass`. For SSH-based login. Enter sudo user's password at prompt and then new user's password. 
+
+#### Example 2: With non-root user and pre-configured password
+
+    - hosts: servers
+      vars:
+        public_keys:
+          - '~/.ssh/id_rsa.pub'
+        # the password is 'test'
+        deployment_password: $6$AC3bdCF7$MA5sPtsGsOei6fCtyyzHeOqBpEzsi.yl9wS1yaP1.nKhuNR6ZBmcouWh6XJkrFdzreENtvUF4Gr2R0gfIQ/PT.
+      roles:
+         - { 
+             role: wahidsadik.ansible-role-harden-ubuntu,
+           }
+
+You can run it the same way it's shown in last example.
+
+#### Example 3: Ready to use playbook
 
 TBD
 

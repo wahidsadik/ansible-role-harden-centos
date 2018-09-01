@@ -1,0 +1,8 @@
+- name: Install unattended-upgrades with default interval
+  action: yum name=yum-cron state=installed
+
+- name: Start yum-cron
+  action: systemd name=yum-cron state=started
+
+- name: Enable yum-cron during startup
+  action: systemd name=yum-cron enabled=yes
